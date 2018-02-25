@@ -76,6 +76,14 @@ public class UserController
 	}
 
 	
+	@RequestMapping(value="/getUsersXml", method=RequestMethod.GET, produces=MediaType.APPLICATION_XML_VALUE)
+	public   @ResponseBody  List  respondejson()
+	{	
+		System.out.println("inside getAllusersXml");
+		List  userList = userDao.findAllUsers();
+		return userList;
+	}
+	
 //	@RequestMapping(value="/getUserByIdXml/{id}", method=RequestMethod.GET, produces=MediaType.APPLICATION_XML_VALUE)
 //	public   @ResponseBody  UserEnrollmentXml  getAllUserByIdXml(@PathVariable("id")int  id)
 //	{	
