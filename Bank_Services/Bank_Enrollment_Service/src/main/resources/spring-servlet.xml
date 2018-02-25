@@ -1,0 +1,63 @@
+<beans   xmlns="http://www.springframework.org/schema/beans"
+xmlns:mvc="http://www.springframework.org/schema/mvc"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:p="http://www.springframework.org/schema/p"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-4.0.xsd
+http://www.springframework.org/schema/mvc
+http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+  <context:component-scan   base-package="com.spring.dao,com.spring.validation,com.spring.junitclass"/>
+  
+  <mvc:annotation-driven/>
+  <bean  id="jt"    class="org.springframework.jdbc.core.JdbcTemplate">
+       <property    name="dataSource"     ref="ds"/>
+  </bean>
+  
+  <bean    id="ds"    class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+       <property   name="driverClassName"    value="oracle.jdbc.driver.OracleDriver"/>
+       <property    name="url"     value="jdbc:oracle:thin:@localhost:1521:xe"/>
+       <property    name="username"     value="system"/>
+       <property   name="password"     value="sonusonu"/>
+  </bean>
+
+
+   
+ <!--  bean  id="setUpaccount"       class="com.spring.dao.SetUpAccountImpl"/>
+ <bean  id="inputValidation"    class="com.spring.validation.InputValidationImpl"/-->
+ 
+ <!--  bean id="sessionFactory"
+        class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="ds"></property>
+        <property name="configLocation">
+            <value>classpath:hibernate.cfg.xml</value>
+        </property>
+        <property name="configurationClass">
+            <value>org.hibernate.cfg.AnnotationConfiguration</value>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">${jdbc.dialect}</prop>
+                <prop key="hibernate.show_sql">true</prop>
+            </props>
+        </property>
+    </bean-->
+
+    <!--  bean id="transactionManager"
+        class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+
+    <bean id="propertyConfigurer"
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+        p:location="/WEB-INF/HibernateProperty/jdbc.properties">
+    </bean-->
+ 
+ 
+</beans>  
+
+
+
