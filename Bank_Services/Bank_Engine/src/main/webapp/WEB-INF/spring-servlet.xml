@@ -34,6 +34,7 @@ http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
   <bean  id="setUpaccount"       class="com.spring.dao.SetUpAccountImpl"/>
   <bean  id="inputValidation"    class="com.spring.validation.InputValidationImpl"/>
 
+  
     <mvc:annotation-driven>
         <mvc:message-converters>
             <bean id="marshallingHttpMessageConverter"

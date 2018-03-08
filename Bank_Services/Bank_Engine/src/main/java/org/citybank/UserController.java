@@ -5,10 +5,12 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,17 +27,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.dao.UserDao;
 import com.spring.dao.UserDaoXml;
+import com.spring.model.Message;
+import com.spring.service.MessageService;
 import com.spring.xml.UserListXml;
 import com.spring.xml.UserEnrollmentXml;
 
 
 @RestController
 @RequestMapping("/rest")
+//@Scope("prototype")
 public class UserController 
 {
 	@Autowired
 	private  UserDao  userDao;
 	
+//	@Autowired
+//	private MessageService message;
+//	
 //	@Autowired
 //	private  UserDaoXml  userDaoXml;
 	
@@ -52,6 +60,28 @@ public class UserController
 		return new ResponseEntity<String>(str,responseHeaders,HttpStatus.OK);
 	}
 	
+	@RequestMapping(value="/messages/{messageId}/{name}",  method=RequestMethod.GET, produces=MediaType.APPLICATION_XML_VALUE)
+	public   ResponseEntity<String>  pathparamtype(@PathVariable int messageId,@PathVariable String name)
+	{	System.out.println("Inside Get Type");
+	    logger.debug("Inside addUser Resource::::::Request to add the User at bank side");
+	    
+	    HttpHeaders responseHeaders = new HttpHeaders();
+		String  str1 = Integer.toString(messageId);
+		String  str2 = name;
+		return new ResponseEntity<String>("message Id is "+str1+" name is "+str2,responseHeaders,HttpStatus.OK);
+	}
+	
+	@RequestMapping(value="/messages/{messageId}/{name}",  method=RequestMethod.POST	, produces=MediaType.APPLICATION_XML_VALUE)
+	public   ResponseEntity<String>  updatetype(@PathVariable int messageId,@PathVariable String name)
+	{	System.out.println("Inside update Type");
+	    logger.debug("Inside addUser Resource::::::Request to add the User at bank side");
+	    
+	    HttpHeaders responseHeaders = new HttpHeaders();
+		String  str1 = Integer.toString(messageId);
+		String  str2 = name;
+		return new ResponseEntity<String>("message Id is "+str1+" name is "+str2,responseHeaders,HttpStatus.OK);
+	}
+	
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	@ResponseBody
@@ -61,19 +91,43 @@ public class UserController
 	error = error + ex.getMessage();
 	String responseMessage = "FAILOVER";
 	System.out.println("Inside exception"); 
+	System.out.println("Exception is "+ex);
 	UserEnrollmentXml response=new UserEnrollmentXml();
 	
 	return response;
 	
 	}
+
+	/*
+	 * This resource will return array of xmls*/
 	
-	@RequestMapping(value="/getUsersXml", method=RequestMethod.GET, produces=MediaType.APPLICATION_XML_VALUE)
-	public   @ResponseBody  List  getAllUsersXml()
-	{	
-		System.out.println("inside getAllusersXml");
-		List  userList = userDao.findAllUsers();
-		return userList;
+	@RequestMapping(value="/messages", 
+			        method=RequestMethod.GET, 
+			        produces=MediaType.APPLICATION_ATOM_XML_VALUE)
+    public ResponseEntity<MessageService>  getMessages(){
+		
+		MessageService ms = new MessageService();
+		System.out.println(ms.getAllMessages());
+		return new ResponseEntity<>(new MessageService(ms.getAllMessages()),HttpStatus.OK);	
 	}
+	
+//	@RequestMapping(value="/messages", 
+//	        method=RequestMethod.GET, 
+//	        produces=MediaType.APPLICATION_ATOM_XML_VALUE)
+//	public Message  getMessages(){
+//	
+//	Message message1 = new Message(1L,"Hello World","Alok");
+//
+//	return message1;
+//	}
+	
+//	@RequestMapping(value="/getUsersXml", method=RequestMethod.GET, produces=MediaType.APPLICATION_XML_VALUE)
+//	public   @ResponseBody  List  getAllUsersXml()
+//	{	
+//		System.out.println("inside getAllusersXml");
+//		List  userList = userDao.findAllUsers();
+//		return userList;
+//	}
 
 	
 	@RequestMapping(value="/getUsersXml", method=RequestMethod.GET, produces=MediaType.APPLICATION_XML_VALUE)
