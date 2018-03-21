@@ -8,23 +8,32 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import com.spring.dao.UserDao;
 import com.spring.dao.UserDaoXml;
 import com.spring.model.Message;
@@ -34,12 +43,16 @@ import com.spring.xml.UserEnrollmentXml;
 
 
 @RestController
-@RequestMapping("/rest")
+@RequestMapping("/messages")
 //@Scope("prototype")
 public class UserController 
 {
 	@Autowired
 	private  UserDao  userDao;
+	
+	MessageService ms = new MessageService();
+	
+	Message message;
 	
 //	@Autowired
 //	private MessageService message;
@@ -82,34 +95,69 @@ public class UserController
 		return new ResponseEntity<String>("message Id is "+str1+" name is "+str2,responseHeaders,HttpStatus.OK);
 	}
 	
-	@ExceptionHandler(HttpMessageNotReadableException.class)
-	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-	@ResponseBody
-	UserEnrollmentXml handleXMLException(HttpMessageNotReadableException ex) {
-	 
-	String error = "Invalid XML.Error is:-";
-	error = error + ex.getMessage();
-	String responseMessage = "FAILOVER";
-	System.out.println("Inside exception"); 
-	System.out.println("Exception is "+ex);
-	UserEnrollmentXml response=new UserEnrollmentXml();
 	
-	return response;
-	
-	}
-
 	/*
 	 * This resource will return array of xmls*/
 	
-	@RequestMapping(value="/messages", 
-			        method=RequestMethod.GET, 
-			        produces=MediaType.APPLICATION_ATOM_XML_VALUE)
-    public ResponseEntity<MessageService>  getMessages(){
+	@RequestMapping(method=RequestMethod.GET, 
+			        produces=MediaType.APPLICATION_JSON_VALUE,params={"year","start","size"})
+    public ResponseEntity<MessageService>  getMessages(@RequestParam("year") int year,
+											    	   @RequestParam("start") int start,
+											    	   @RequestParam("size") int size){
 		
-		MessageService ms = new MessageService();
-		System.out.println(ms.getAllMessages());
+		if(year>0){
+		return new ResponseEntity<>(new MessageService(ms.getAllMessagesforYear(year)),HttpStatus.OK);
+		}
+		if(start>=0 && size>=0){
+		return new ResponseEntity<>(new MessageService(ms.getAllMessagesPaginated(start, size)),HttpStatus.OK);
+		}
 		return new ResponseEntity<>(new MessageService(ms.getAllMessages()),HttpStatus.OK);	
 	}
+	
+	/*
+	 * need to read @PathVariable Documents for more implementations
+	 * 
+	 * */
+	@RequestMapping(value="/{messageId}",  method=RequestMethod.GET, produces=MediaType.APPLICATION_JSON_VALUE)
+	public   ResponseEntity<Message>  getmessagebyId(@PathVariable int messageId)
+	{	System.out.println("Inside Get Type");
+	   
+	    return new ResponseEntity<>(ms.getMessage(messageId),HttpStatus.OK);
+	    
+	}
+	
+
+	@RequestMapping(method=RequestMethod.POST, produces=MediaType.APPLICATION_JSON_VALUE,
+			consumes=MediaType.APPLICATION_JSON_VALUE)
+	public   ResponseEntity<Message>  addmessage(@Valid @RequestBody Message message,
+			BindingResult bindingResult) throws BindException
+	{	System.out.println("Inside POST Type");
+	
+	    if (bindingResult.hasErrors()) {
+	    	this.message = message;
+	      throw new BindException(bindingResult);
+	    }
+	    message.setResponsemessage("Success");
+	    return new ResponseEntity<>(ms.addMessage(message),HttpStatus.OK);
+	}
+	
+	@ExceptionHandler(BindException.class)
+    public @ResponseBody ResponseEntity<Message> handleException(BindException e) 
+    {    System.out.println("Inside Exception");
+         message.setResponsemessage(e.getFieldError().toString());
+         return new ResponseEntity<>(message,HttpStatus.BAD_REQUEST);
+    }
+
+	
+	@RequestMapping(method=RequestMethod.PUT, produces=MediaType.APPLICATION_JSON_VALUE,
+			consumes=MediaType.APPLICATION_JSON_VALUE)
+	public   ResponseEntity<Message>  updatemessage(@RequestBody Message message)
+	{	System.out.println("Inside PUT Type");
+	    
+	    return new ResponseEntity<>(ms.updateMessage(message),HttpStatus.OK);
+	}
+	
+	
 	
 //	@RequestMapping(value="/messages", 
 //	        method=RequestMethod.GET, 

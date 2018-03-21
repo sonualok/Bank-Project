@@ -15,6 +15,7 @@ http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
   
   <mvc:annotation-driven/>
   <context:annotation-config/>
+  <mvc:annotation-driven enable-matrix-variables="true"/>
   
   <bean  id="jt"    class="org.springframework.jdbc.core.JdbcTemplate">
        <property    name="dataSource"     ref="ds"/>
@@ -34,6 +35,7 @@ http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
   <bean  id="setUpaccount"       class="com.spring.dao.SetUpAccountImpl"/>
   <bean  id="inputValidation"    class="com.spring.validation.InputValidationImpl"/>
 
+  <bean  id="profileService"    class="com.spring.service.ProfileService"/>
   
     <mvc:annotation-driven>
         <mvc:message-converters>

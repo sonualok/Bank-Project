@@ -51,7 +51,8 @@ public class SetUpAccountImpl implements SetUpAccount{
 
 	
 	public void setUpBankAccount(UserEnrollmentXml userEnrollmentXml, JdbcTemplate jt) {
-		HashMap l = (HashMap) jt.queryForMap("select  customer_bank_id  from  test.bank_account_number  where ssn = ?", userEnrollmentXml.getSsn());
+		HashMap l = (HashMap) jt.queryForMap("select  customer_bank_id  from  test.bank_account_number  "
+				+ "where ssn = ?", userEnrollmentXml.getSsn());
 	    l.get("CUSTOMER_BANK_ID");
 	    
 	    java.util.Date date = new java.util.Date();
